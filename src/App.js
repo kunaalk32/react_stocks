@@ -1,33 +1,73 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import {XYPlot, LineSeries, VerticalGridLines, HorizontalGridLines, XAxis, YAxis} from 'react-vis';
+import {FlexibleWidthXYPlot, LineSeries, VerticalGridLines, HorizontalGridLines, XAxis, YAxis, Crosshair} from 'react-vis';
 import '../node_modules/react-vis/dist/style.css';
+import axios from 'axios';
+let api_key = "dzs_7Mq_ru1UBTg38nYt";
 
 class App extends Component {
-	render() {
-		const data = [
-			{x: 0, y: 8},
-			{x: 1, y: 5},
-			{x: 2, y: 4},
-			{x: 3, y: 9},
-			{x: 4, y: 1},
-			{x: 5, y: 7},
-			{x: 6, y: 6},
-			{x: 7, y: 3},
-			{x: 8, y: 2},
-			{x: 9, y: 0}
-		];
+	constructor() {
+		super();
+		this.state = {
+			data: [],
+			crosshairVals: []
+		}
+	}
+	componentWillMount() {
+		axios.get(encodeURI("https://www.quandl.com/api/v3/datasets/WIKI/FB/data.json?api_key=" + api_key)).then(
+			res => {
+				if(res.data.dataset_data.data) {
+					let newData = res.data.dataset_data.data.map(arr => {
+						return {x: new Date(arr[0]), y: arr[4]};
+					});
+					let meta = {
+						ticker: "FB",
+						data: newData
+					}
+					this.state.data.push(meta);
+					this.setState({
+						data: this.state.data
+					});
+				}
+			});
+	}
 
+	_onNearestX = (value, {index}) =>  {
+		this.setState({
+			crosshairVals: this.state.data.map(meta => meta.data[index].y),
+		});
+	}
+
+	_onMouseLeave = () => {
+	    this.setState({crosshairVals: []});
+	  }
+
+	render() {
 		return (
-			<div className="App">
-				<XYPlot height={300} width={300}>
+			<div className="App container">
+				<FlexibleWidthXYPlot height={500} xType="time" onMouseLeave={this._onMouseLeave}>
 					<VerticalGridLines />
 					<HorizontalGridLines />
 					<XAxis />
 					<YAxis />
-					<LineSeries data={data}/>
-				</XYPlot>
+					<Crosshair
+						values={this.state.crosshairVals}
+						itemsFormat={vals =>
+							vals.map((val, index) => {
+								return {title: this.state.data[index].ticker, value: val}
+							})
+						}
+					/>
+					{
+						this.state.data.map(meta =>
+							<LineSeries
+								animation
+								data={meta.data}
+								key={`$(meta.ticker)$(data.data.x)`}
+								onNearestX={this._onNearestX}
+							/>)
+					}
+				</FlexibleWidthXYPlot>
 			</div>
 		);
 	}
