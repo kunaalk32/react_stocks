@@ -1,0 +1,11 @@
+.head {
+	background-color: rgba(0,0,0,1);
+	border-top-color: rgba(0,0,0,1);
+	border-left-color: rgba(0,0,0,1);
+	border-right-color: rgba(0,0,0,1);
+	border-bottom: white solid 1px;
+}
+
+#brand {
+	color: white;
+}
