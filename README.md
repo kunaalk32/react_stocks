@@ -1,4 +1,4 @@
-This project is a robinhood.com clone. In the future, it should serve as a front end interface to my Stock Portfolio Optimizer. Enter the stock ticker symbols in the box and have the historical prices overlaid on the graph.
+This project is a robinhood.com(https://robinhood.com/) clone. In the future, it should serve as a front end interface to my Stock Portfolio Optimizer. Enter the stock ticker symbols in the box and have the historical prices overlaid on the graph.
 
 ## Folder Structure
 
